@@ -16,102 +16,40 @@
     <script src="../plugins/angularjs/angular.min.js"></script>
     <script src="../plugins/angularjs/pagination.js"></script>
     <script src="../plugins/angularjs/pagination.css"></script>
-    <script type="text/javascript">
-        var app = angular.module('pinyougou',['pagination']);
-        app.controller('brandController',function($scope,$http){
-            //查询品牌列表
-            $scope.findAll = function(){
-                $http.post('../brand/findAll.do').success(
-                    function(response){
-                        $scope.list = response;
-                    }
-                );
-            }
-
-            //分页控件
-            $scope.paginationConf = {
-                currentPage:1,
-                totalItems: 10,
-                itemsPerPage: 10,
-                perPageOptions: [10,20,30,40,50],
-                onChange: function(){
-                    $scope.reloadPage();
-                }
-            };
-            //刷新列表
-            $scope.reloadPage = function (){
-                $scope.findPage($scope.paginationConf.currentPage,$scope.paginationConf.totalItems)
-            }
-            //分页方法
-            $scope.findPage = function (page,size) {
-                $http.get('../brand/findPage.do?page='+page+'&size='+size).success(
-                  function (response) {
-                      $scope.list = response.rows;
-                      $scope.paginationConf.totalItems = response.total;//更新总记录数
-                  }  
-                );
-            }
-            //增加和更新方法
-            $scope.saveBrand = function () {
-                var methodName = 'addBrand';
-                if ($scope.entity.id != null){
-                    methodName = 'updateBrand';
-                }
-                $http.post('../brand/'+methodName+'.do',$scope.entity).success(
-                    function (response) {
-                        if (response.success){
-                            $scope.reloadPage();//新增或更新成功刷新页面
-                        }else {
-                            alert(response.message);
-                        }
-                    }
-                );
-            }
-            
-            //查找
-            $scope.findOne = function (id) {
-                $scope.get('../brand/findOne.do?id='+id).success(
-                    function (response) {
-                        $scope.entity = response;
-                    }
-                );
-            }
-        });
-    </script>
-
+    <script src="../js/base_pagination.js"></script>
+    <script src="../js/service/brandService.js"></script>
+    <script src="../js/controller/brandController.js"></script>
 </head>
-<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="brandController">
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="brandController" >
 <!-- .box-body -->
-
-</body>
-
 <div class="box-header with-border">
     <h3 class="box-title">品牌管理</h3>
 </div>
 
 <div class="box-body">
 
-    <!--&lt;!&ndash; 数据表格 &ndash;&gt;-->
+    <!-- 数据表格 -->
     <div class="table-box">
 
-        <!--&lt;!&ndash;工具栏&ndash;&gt;-->
+        <!--工具栏-->
         <div class="pull-left">
             <div class="form-group form-inline">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ng-click="entity={}"><i class="fa fa-file-o"></i> 新建</button>
-                    <button type="button" class="btn btn-default" title="删除" ><i class="fa fa-trash-o"></i> 删除</button>
+                    <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ng-click="entity={}" ><i class="fa fa-file-o"></i> 新建</button>
+                    <button type="button" class="btn btn-default" title="删除" ng-click="delete()"><i class="fa fa-trash-o" ></i> 删除</button>
                     <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
                 </div>
             </div>
         </div>
         <div class="box-tools pull-right">
             <div class="has-feedback">
-
+                品牌名称:<input ng-model="searchEntity.name"> 品牌首字母:<input ng-model="searchEntity.firstChar">
+                <button  class="btn btn-default" ng-click="reloadList()">查询</button>
             </div>
         </div>
-        <!--&lt;!&ndash;工具栏/&ndash;&gt;-->
+        <!--工具栏/-->
 
-        <!--&lt;!&ndash;数据列表&ndash;&gt;-->
+        <!--数据列表-->
         <table id="dataList" class="table table-bordered table-striped table-hover dataTable">
             <thead>
             <tr>
@@ -126,30 +64,30 @@
             </thead>
             <tbody>
             <tr ng-repeat="entity in list">
-                <td><input  type="checkbox" data-ng-click="updateSelection($event,entity.id)"></td>
+                <td><input  type="checkbox" ng-click="updateSelection($event, entity.id)" ></td>
                 <td>{{entity.id}}</td>
                 <td>{{entity.name}}</td>
                 <td>{{entity.firstChar}}</td>
                 <td class="text-center">
-                    <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal" data-ng-click="findOne(entity.id)" >修改</button>
+                    <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal" ng-click="findOne(entity.id)" >修改</button>
                 </td>
             </tr>
+
             </tbody>
         </table>
+        <!--数据列表/-->
         <tm-pagination conf="paginationConf"></tm-pagination>
-        <!--&lt;!&ndash;数据列表/&ndash;&gt;-->
-
 
     </div>
-    <!--&lt;!&ndash; 数据表格 /&ndash;&gt;-->
+    <!-- 数据表格 /-->
 
 
 
 
 </div>
-<!--&lt;!&ndash; /.box-body &ndash;&gt;-->
+<!-- /.box-body -->
 
-<!--&lt;!&ndash; 编辑窗口 &ndash;&gt;-->
+<!-- 编辑窗口 -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" >
         <div class="modal-content">
@@ -170,11 +108,11 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-success" data-dismiss="modal" aria-hidden="true" data-ng-click="saveBrand()">保存</button>
+                <button class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="save()">保存</button>
                 <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
             </div>
         </div>
     </div>
 </div>
-
+</body>
 </html>
