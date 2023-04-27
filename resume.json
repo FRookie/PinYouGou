@@ -53,8 +53,8 @@
     ],
     "skillList": [
         {
-            "skill_name": "对使用过的框架底层原理都有比较清晰的了解，如Mysql，RocketMq，Xxl-job，Redis，SpringBoot，Spring，Dubbo, Netty 等",
-            "skill_desc": "对使用过的框架底层原理都有比较清晰的了解，如Mysql，RocketMq，Xxl-job，Redis，SpringBoot，Spring，Dubbo, Netty 等",
+            "skill_name": "对使用过的技术或框架的底层原理都有比较清晰的了解，如Mysql，RocketMq，Xxl-job，Redis，SpringBoot，Spring，Dubbo, Netty 等",
+            "skill_desc": "对使用过的技术或框架的底层原理都有比较清晰的了解，如Mysql，RocketMq，Xxl-job，Redis，SpringBoot，Spring，Dubbo, Netty 等",
             "skill_level": null,
             "dataIndex": 0
         },
